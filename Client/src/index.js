@@ -2,10 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 
+import { UserContext } from './Components/Context/UserContext';
 
-ReactDOM.render(
-  <React.StrictMode>
+const Apps=()=>{
+  return( <UserContext>
     <App />
-  </React.StrictMode>,
+    </UserContext>)
+}
+ReactDOM.render(
+  <UserContext>
+  <App/>
+  </UserContext>
+  ,
   document.getElementById('root')
 );

@@ -1,9 +1,15 @@
-import React from 'react'
-
+import React from 'react';
+import Login from './Components/Login';
+import Navigation from './Components/components/Navigation'
 export default function App() {
-    return (
-        <div>
-            Hello world
-        </div>
+         
+
+          return (
+      <div>
+     <Navigation/>
+
+           <Login/>
+           </div>
+       
     )
 }
