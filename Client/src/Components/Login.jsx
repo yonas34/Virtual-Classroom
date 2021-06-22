@@ -48,6 +48,12 @@ const useStyles = makeStyles((theme) => ({
 }));
  const Login=()=> {
     const [email,setEmail]=useState('');
+    const [userName,setUserName]=useState('');
+    const [password,setPassword]=useState('');
+    const [userType,setUserType]=useState('');
+    const [userId,setUserId]=useState('');
+
+
     const globalstate=useContext(User);
     const classes = useStyles();
    console.log(globalstate);
@@ -76,6 +82,22 @@ const useStyles = makeStyles((theme) => ({
             autoFocus
             onChange={(event)=>setEmail(event.target.value)}
           />
+
+
+<TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="User Name"
+            name="name"
+            autoFocus
+            onChange={(event)=>setEmail(event.target.value)}
+          />
+
+
+
           <TextField
             variant="outlined"
             margin="normal"
