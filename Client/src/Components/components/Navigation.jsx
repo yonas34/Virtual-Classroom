@@ -13,6 +13,7 @@ export default function Navigation(){
         root: {
           flexGrow: 1,
         },
+        position: 'sticky',
         menuButton: {
           marginRight: theme.spacing(2),
         },
@@ -20,6 +21,7 @@ export default function Navigation(){
             display: 'flex',
             '& > *': {
               margin: theme.spacing(1),
+              left:'390px'
             },
           }
     
@@ -32,7 +34,7 @@ export default function Navigation(){
       
       
         return (
-          <div className={classes.avatar}>
+          <div className={classes.avatar} >
             <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
             <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
             <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
