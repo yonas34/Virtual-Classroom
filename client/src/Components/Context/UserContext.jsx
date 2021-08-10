@@ -6,21 +6,23 @@ const { Provider } = User;
 
 const UserContext = ( { children } ) => {
   const [User,setUser]=useState({UserName:"Yon"});
-  // const [Authenticated,setAuthenticated]
+   const [Authenticated,setAuthenticated]=useState(false);
   const [state, dispatch] = useReducer((state, action) => {
-      console.log(state)
+      console.log(action)
     switch(action.type) {
       case 'SET_USER':
-        setUser ({"UserName":action.UserName,UserType:action.userType,UserId:action.userId,UserEmail:action.UserEmail,authenticated:false,Passwd:action.Passwd});// do something with the action
+        setUser ({"UserName":action.UserName,"last_name":action.last_name,"UserType":action.UserType,UserId:action.UserId,UserEmail:action.UserEmail,authenticated:action.authenticated,Passwd:action.Passwd});
+        console.log(User);
+        // do something with the action
         return User;
-      case 'USER_LOGEDIN':
-       User.authenticated=!User.authenticated;
+      case 'USER_LOGEDOUT':
+      setUser({authenticated:false})
         return User;
       case 'SET_WEBSOCKET':
         User.webSocket=action.webSocket;
           return User;
         default:
-        console.log("error");
+        console.log("error"+state);
     };
   }, initialState);
 

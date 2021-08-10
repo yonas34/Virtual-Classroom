@@ -1,21 +1,24 @@
-import React, {createContext, useReducer} from 'react';
+import React, {createContext, useReducer,useState} from 'react';
 
 const initialState = {};
 const Page = createContext(initialState);
 const { Provider } = Page;
 
 const PageContext = ( { children } ) => {
-  const [state, dispatch] = useReducer((state, action) => {
+  const [pageState,setPageState]= useState(1);
+  const [page, setPage] = useReducer((state, action) => {
+   console.log(action.pageNo);
     switch(action.type) {
-      case 'action description':
-        const newState = {};// do something with the action
-        return newState;
+      case 'change':
+        setPageState(action.pageNo);
+        return pageState;
+        
       default:
-        throw new Error();
+        throw new Error(action.type);
     };
   }, initialState);
 
-  return <Provider value={{ state, dispatch }}>{children}</Provider>;
+  return <Provider value={{ page, setPage }}>{children}</Provider>;
 };
 
-export { Page, PageContext }
+export {Page, PageContext }

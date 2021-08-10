@@ -1,13 +1,16 @@
-import React,{useContext,useState} from 'react'
+import React,{useContext,useState,useEffect} from 'react'
 import { User } from './Context/UserContext'
 import axios from 'axios';
 
 
-
+import image from '../data/bg.jpg'
 
 import{ Avatar,Button,CssBaseline,TextField,FormControlLabel,Checkbox,Link,Grid,Box,Typography,makeStyles,Container} from '@material-ui/core';
+import { Paper } from '@material-ui/core';
 
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Navigation from './components/Navigation';
+
 
 
 function Copyright() {
@@ -31,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    backgroundImage:'url('+image+')'
   },
   avatar: {
     margin: theme.spacing(1),
@@ -56,21 +60,41 @@ const useStyles = makeStyles((theme) => ({
     const globalstate=useContext(User);
     const classes = useStyles();
  
-   const {dispatch}=globalstate;
-   const dataSubmitted=(data)=>{
+
+
+
+
+   const {state,dispatch}=globalstate;
+   
+   const dataSubmitted=async(data)=>{
      data.preventDefault();
    
    if(register)
 {   dispatch({type:"SET_USER",UserName:userName,userType:userType,userId:userId,UserEmail:email,Passwd:password});
 //register user axios implementation
-axios.post('https://localhost:8000/register',{"UserName":userName,"Email":email,"password":password}).then((response)=>{
+await axios.post('https://10.42.0.1:8000/register',{"UserName":userName,"Email":email,"password":password}).then((response)=>{
 
 console.log(response);
 });
-    dispatch({"type":"USER_LOGEDIN"});}
+   }
   if(!register)
-  {dispatch({type:"SET_USER",UserName:userName,userType:userName==="y"? 'student':"teacher" ,userId:userId,UserEmail:email,Passwd:password});
-  dispatch({"type":"USER_LOGEDIN"});}
+  {
+   await axios.post('https://10.42.0.1:8000/login',{"email":email,"password":password}).then((response)=>{
+
+console.log(response);
+console.log(localStorage.length)
+localStorage.setItem('user',JSON.stringify(response.data));
+dispatch({type:"SET_USER","UserName":response.data.first_name,"last_name":response.data.last_name,"UserType":response.data.user_type,UserId:response.data._id,UserEmail:response.data.email,authenticated:true,Passwd:response.data.password});
+
+
+    })
+
+    
+    
+   
+
+
+}
   //login user axios implementation
 
 
@@ -91,8 +115,11 @@ const regfunc=(event)=>{
 
 
     return (
+      
         <Container component="main" maxWidth="xs">
+      
       <CssBaseline />
+      <Paper className={classes.paper}>
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
@@ -104,7 +131,7 @@ const regfunc=(event)=>{
           
 
 
-<TextField
+{register &&<TextField
             variant="outlined"
             margin="normal"
             //required
@@ -114,7 +141,7 @@ const regfunc=(event)=>{
             name="name"
             autoFocus
             onChange={(event)=>setUserName(event.target.value)}
-          />
+          />}
 
 
 <TextField
@@ -199,6 +226,7 @@ const regfunc=(event)=>{
       <Box mt={8}>
         <Copyright />
       </Box>
+      </Paper>
     </Container>
     )
    

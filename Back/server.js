@@ -9,16 +9,7 @@ const {teacherModel,studentModel}=require('./UserMode');
 const minimist=require('minimist')
 const kurento=require('kurento-client');
 const cors=require('cors');
-
-var sessionHandler = session({
-    secret : 'none',
-    rolling : true,
-    resave : true,
-    saveUninitialized : true
-});
-
-
-
+const { v4 } =require('uuid');
 
 
 var idCounter = 0;
@@ -26,7 +17,13 @@ var idCounter = 0;
 var presenter = null;
 var viewers = [];
 var noPresenterMessage = 'No active presenter. Try again later...';
-
+const sessionHandler = session({
+    secret : 'none',
+    rolling : true,
+    resave : true,
+    saveUninitialized : true
+});
+const apps=app(sessionHandler);
 
 var sessions = {};
 var candidatesQueue={};
@@ -35,7 +32,7 @@ const options = {
   key: fs.readFileSync('key.pem'),
   cert: fs.readFileSync('cert.pem')
 };
-const server= https.createServer(options, app);
+const server= https.createServer(options, apps);
 
 
 
@@ -65,6 +62,7 @@ ws.on('error',(error)=>{
  
 ws.on('close',()=>{
     console.log('connection '+sessionId+' closed')
+    stop(sessionId);
 })
 
 ws.on('message',(_message)=>{
@@ -105,8 +103,11 @@ case 'presenter':
 
 
     case 'viewer':
+        console.log('viewer')
         startViewer(sessionId, ws, message.sdpOffer, function(error, sdpAnswer) {
+  
             if (error) {
+                console.log(error);
                 return ws.send(JSON.stringify({
                     id : 'viewerResponse',
                     response : 'rejected',
@@ -122,7 +123,7 @@ case 'presenter':
         });
         break;    
 
-case stop:
+case 'stop':
     stop(sessionId);
     break;
 case "onIceCandidate":
@@ -143,14 +144,11 @@ default:
 
 
 })
-function stop(sessionId){
-console.log(sessionId);
 
-}
 var argv = minimist(process.argv.slice(2), {
     default: {
-        as_uri: 'https://192.168.43.200:8000/',
-        ws_uri: 'ws://192.168.43.200:8888/kurento'
+        as_uri: 'https://10.42.0.1:8000/',
+        ws_uri: 'ws://10.42.0.1:8888/kurento'
     }
 });
 
@@ -184,7 +182,7 @@ function getKurentoClient(callback) {
 
 function startPresenter(sessionId, ws, sdpOffer, callback) {
 	clearCandidatesQueue(sessionId);
-
+console.log(presenter);
 	if (presenter !== null) {
 		stop(sessionId);
 		return callback("Another user is currently acting as presenter. Try again later ...");
@@ -537,4 +535,37 @@ function onIceCandidate(sessionId, _candidate) {
 }
 
 
-server.listen(8000,()=>{console.log('running on https://localhost:8000')});
+function stop(sessionId) {
+	if (presenter !== null && presenter.id == sessionId) {
+		for (var i in viewers) {
+			var viewer = viewers[i];
+			if (viewer.ws) {
+				viewer.ws.send(JSON.stringify({
+					id : 'stopCommunication'
+				}));
+			}
+		}
+		presenter.pipeline.release();
+		presenter = null;
+		viewers = [];
+
+	} else if (viewers[sessionId]) {
+		viewers[sessionId].webRtcEndpoint.release();
+		delete viewers[sessionId];
+	}
+
+	clearCandidatesQueue(sessionId);
+
+	if (viewers.length < 1 && !presenter) {
+        console.log('Closing kurento client');
+       if(kurentoClient!==null)
+        kurentoClient.close();
+        
+        kurentoClient = null;
+    }
+}
+
+
+
+
+server.listen(8000,"10.42.0.1",()=>{console.log('running on https://localhost:8000')});
