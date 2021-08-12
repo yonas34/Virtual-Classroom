@@ -2,14 +2,52 @@ import React,{useContext,useRef,useEffect,useState} from 'react'
 import {User} from './Context/UserContext';
 import kutils from 'kurento-utils';
 import Card from '@material-ui/core/Card'
-import { Button, CardContent, CardMedia } from '@material-ui/core';
+import {Button, CardActionArea, CardContent, CardMedia,makeStyles, MenuItem, MenuList } from '@material-ui/core';
 import {Page} from './Context/PageContext';
 import {Stream} from './Context/stream'
 import {Webrtc} from '../utils/webrtc';
+import Menu from '@material-ui/core/Menu'
+const useStyles = makeStyles((theme) => ({
+    paper:{
+        padding:theme.spacing(2),
+        textAlign:'center',
+        color:theme.palette.text.secondary,
+    
+    },
+    img:{
+        height:100,
+        paddingTop:'56.25%',
+        marginTop:'30',
+        padding:theme.spacing(30)
+
+    },
+    card:{
+
+marginTop:'50px',
+width:'75%',
+marginLeft:'20%',
+
+boxShadow:theme.shadows[10]
+
+
+    },
+    commentSection:{
+        boxShadow:theme.shadows[14],
+        color:'white',
+        width:'300%',
+		
+    }}));
+    
+
+
+
+
+
 export default function Conference() {
+	const classes=useStyles();
 var localStream=null;
 
-
+let str=false;
 	const[streams,setStreams]=useState(null);
 	const {stream,setStream}=useContext(Stream);
 
@@ -30,23 +68,25 @@ console.log(event);
 //webSocket=Webrtc(streamRf,state);
   var webRtcPeer=null;
 
-  
+  const constraints={"video":true,"audio":true }
+
    
   
 
 
-webSocket.onopen=(event)=>{console.log("connected : "+state.UserType);
+webSocket.onopen=(event)=>{console.log("connected : "+state.user.user_type);
 	
 
+//sendMessage({id:'online_classes',data:state.position});
 
-
-    if (!webRtcPeer && state.UserType=="teacher") {
+    if (!webRtcPeer && state.user.user_type=="lecturer") {
 		
-
+		
         var options = {
             localVideo: document.getElementById('remote'),
-            onicecandidate : onIceCandidate
-        }
+            onicecandidate : onIceCandidate,
+			mediaConstraints: constraints
+		}
     
         webRtcPeer=kutils.WebRtcPeer.WebRtcPeerSendonly(options, function(error) {
             if(error) return onError(error);
@@ -57,12 +97,14 @@ webSocket.onopen=(event)=>{console.log("connected : "+state.UserType);
     }
     
     
-    if (!webRtcPeer && state.UserType=="student") {
+    if (!webRtcPeer && state.user.user_type=="student") {
             
     
         var options = {
-            remoteVideo: streamRf.current,
-            onicecandidate : onIceCandidate
+            remoteVideo:document.getElementById('local'),
+
+            onicecandidate : onIceCandidate,
+			mediaConstraints:constraints
         }
     
        webRtcPeer=kutils.WebRtcPeer.WebRtcPeerRecvonly(options, function(error) {
@@ -91,33 +133,12 @@ webSocket.onopen=(event)=>{console.log("connected : "+state.UserType);
     console.log(state);
 const LocalVideo=()=>{return <video id="local"  style={{width:"100%",left:'-200px'}}  autoPlay={true}/>};
 const RemoteVideo=()=>{return <video id="remote"   autoPlay={true} style={{width:"100%",left:"-200px"}}></video>};
-// const onIceCandidate=(candidate)=>{
-//     console.log(candidate);
-//     var message = {
-//         id : 'onIceCandidate',
-//         candidate : candidate
-//         };
-//         sendMessage(message);
-// }
-const constraints={"video":true,"audio":true }
-    var options = {
-        localVideo: document.getElementById("remote"),
-        remoteVideo: document.getElementById("local"),
-        onicecandidate : onIceCandidate,
-        mediaConstraints: constraints
-        };
-
-        
-
-// webSocket.send(JSON.stringify({id:'start'}));
-
 const OnError=(data)=>{console.log(data)};
 const sendMessage=(data)=>{webSocket.send(JSON.stringify(data));}
 function startResponse(message) {
 	console.log('SDP answer received from server. Processing ...');
-	//ws.processAnswer(message.sdpAnswer);
 }
-let str=false;
+
 
 webSocket.onmessage=(event)=>{console.log(event.data);
 var parsedMessage=JSON.parse(event.data);
@@ -140,7 +161,8 @@ switch (parsedMessage.id) {
 	case 'iceCandidate':
 		
 		webRtcPeer.addIceCandidate(parsedMessage.candidate)
-		streamRf.current.srcObject=webRtcPeer.remoteStream();
+		//console.log(webRtcPeer.remoteStream());
+	
 		break;
 	default:
 		console.error('Unrecognized message', parsedMessage);
@@ -181,14 +203,16 @@ function onOfferPresenter(error, offerSdp) {
 
 	var message = {
 		id : 'presenter',
-		user:state,
-		sdpOffer : offerSdp
+		user:state.user,
+		sdpOffer : offerSdp,
+		class:'programming',
+		student:[1,2,3,4],
+
 	};
 	sendMessage(message);
     console.log(JSON.parse(JSON.stringify(webRtcPeer.localStream())));
 // stream.srcObject=webRtcPeer.peerConnection.getLocalStreams();
 // if(stream.Streaming)
-streamRf.current.srcObject=webRtcPeer.localStream();
 
 // else
 // {
@@ -207,8 +231,11 @@ function onOfferViewer(error, offerSdp) {
 
 	var message = {
 		id : 'viewer',
-		user:state,
-		sdpOffer : offerSdp
+		user:state.user,
+		sdpOffer : offerSdp,
+		class:'programming',
+		student:state.user._id
+		
 	}
 	sendMessage(message);
 	console.log(webRtcPeer)
@@ -220,18 +247,24 @@ function onIceCandidate(candidate) {
 
 	   var message = {
 	      id : 'onIceCandidate',
-	      candidate : candidate
+	      candidate : candidate,
+		  position_id:state.user.user_type==='student'?state.user._id:'programming'
 	   }
 	   sendMessage(message);
-	   streamRf.current.srcObject=webRtcPeer.remoteStream();
 
 }
 
 function stop() {
 	if (webRtcPeer) {
 		var message = {
-				id : 'stop'
-		}
+			id : 'stop',
+		user:state.user,
+		class:'programming',
+		student:state.user._id
+			}
+
+
+		
 		sendMessage(message);
 		dispose();
 	}
@@ -268,41 +301,23 @@ function dispose() {
 
 
 
-//   const  ws=kutils.WebRtcPeer.WebRtcPeerSendrecv(options,(error)=>{
-//     if(error)
-// return OnError(error);
-// console.log(ws);
-// ws.generateOffer(onOffer)
-
-//     });
-
-//  function onOffer(error, sdpOffer) {
-//         if (error) return OnError(error);
-//         // We've made this function up sendOfferToRemotePeer(sdpOffer,
-//         var message={"id":state.UserType==="student"?'viewer':'presenter','sdpOffer':sdpOffer};
-//         sendMessage(message);
-
-//         (sdpAnswer)=>{
-//         ws.processAnswer(sdpAnswer);
-//         };
-//     }
 
 
-const stopBtn=<Button color="primary" onClick={()=>{stop()}}>Stop</Button>
+const stopBtn= <CardActionArea className={classes.commentSection}> <Button color="primary" onClick={()=>{stop()}}>Stop</Button></CardActionArea>
   
 
 
 
 return (
         
-<Card >
+<Card className={classes.card} >
 
+<Menu><MenuList><MenuItem>hhhh</MenuItem></MenuList></Menu>
 
-<video	  ref={streamRf} autoPlay={true}/>
-{state.authenticated && stop()}
-{state.UserType==="teacher" && <CardContent styel={{width:'100%'} } > {stopBtn}
-<RemoteVideo/></CardContent>}
-{state.UserType==="student" &&<CardContent styel={{width:'100%'}}>	{stopBtn}			
+{state.user.authenticated && stop()}
+{state.user.user_type==="lecturer" && <CardContent styel={{width:'10%'} } > 
+<RemoteVideo/>{stopBtn}</CardContent>}
+{state.user.user_type==="student" &&<CardContent styel={{width:'10%'}}>	{stopBtn}			
 <LocalVideo />
 </CardContent>}
 

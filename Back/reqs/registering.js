@@ -39,10 +39,11 @@ if(user_type==="lecturer"){
 //   listOfClasses:[],
   userInfo:user._id,
 //   scheduleList:[],
- incomingQuestions:[{Question:"Questions",isAns:false}],
+ //incomingQuestions:[{Question:"Questions",isAns:false}],
   });
-  res.status(201).json(lecturer);}
-  doc=await lecturerSchema.find({incomingQuestions:{$elemMatch:{isAns:false}}}).populate("userInfo");
+  res.status(201).json(lecturer);
+}
+  //doc=await lecturerSchema.find({incomingQuestions:{$elemMatch:{isAns:false}}}).populate("userInfo");
   
 // doc.forEach((incomingQuestions)=>{console.log(incomingQuestions.incomingQuestions)});
 

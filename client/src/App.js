@@ -16,29 +16,29 @@ const useStyles = makeStyles((theme) => ({
  
 export default function App() {
 
-  
 
          
     const {dispatch,state}=useContext(User);
+    console.log(state);
     const classes = useStyles();
     useEffect(() => {
-      const response=JSON.parse(localStorage.getItem("user"));
+      const response=JSON.parse(localStorage.getItem("data"));
       console.log(JSON.stringify(localStorage.length))
       if(response)
       {
-        dispatch({type:"SET_USER",UserName:response.first_name,last_name:response.last_name,UserType:response.user_type,UserId:response._id,UserEmail:response.email,Passwd:response.password,authenticated:true});
+        dispatch({type:"SET_USER",user:response.user,position:response.position});
     console.log(response);
       }
      
     }, [])
           return (
             <div>
-          { state.authenticated !== true &&    <div style={{marginTop:'-64px'}}>
+          { state.user.authenticated !== true &&    <div style={{marginTop:'-64px'}}>
           <Navigation/> 
           </div>}
-   { state.authenticated === true && <MiniDrawer/>}
-{console.log(state.authenticated)}
-          {state.authenticated !== true && <Login/>}
+   { state.user.authenticated === true && <MiniDrawer/>}
+{console.log(state.user.authenticated)}
+          {state.user.authenticated !== true && <Login/>}
           
           
            </div>

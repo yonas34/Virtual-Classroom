@@ -107,7 +107,8 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         '& > *': {
           
-          marginLeft:'530px'
+          marginLeft:'1030px',
+          
         
         },},
 
@@ -145,7 +146,7 @@ const useStyles = makeStyles((theme) => ({
           return (
             <div className={classes.avatar}>
              
-              <Avatar alt={state.UserName}  src="/static/images/avatar/3.jpg" />
+              <Avatar alt={state.user.first_name}  src="/static/images/avatar/3.jpg" />
             </div>
           );
       
@@ -155,58 +156,6 @@ const useStyles = makeStyles((theme) => ({
   
       
  
-//   function Auth_nav(){ if(state.authenticated)
-//   console.log(selected);
-//     return(
-     
-//       <Route path="/home"
-//     render={(history)=>(<Tabs value={history.location.pathname!=="/"?history.location.pathname:false} onChange={handleTab}>
-//       {console.log(history.location.pathname)}
-//        <Tab value={routes[0]} label='HOME'  component={Link}/>
-//        <Tab value={routes[1]} label='SCHEDULE'  component={Link} />
-//        <Tab value={routes[2]} label='CLASSROOM' component={Link} />
-//        <Tab value={routes[3]} label='PROFILE' component={Link} />
-//        <Tab value={routes[4]} label='SUPPORT' component={Link} />
-//        <Tab value={routes[5]} label='ADMIN' component={Link} />
-       
-  
-//      </Tabs>
-//     )}/> 
-//     <Switch>
-       
-//     {/* {<div hidden={selected !== 0 && state.authenticated} > <Grid container spacing={3}>
-               
-         
-//                <Post/>
-                       
-//                    </Grid></div>}
-// {<div hidden={selected !== 1 && state.authenticated} > <Schedule /></div>}
-// {  <div hidden={selected !== 2 && state.authenticated} ><Conference/> </div>}
-// {<div hidden={selected !== 1 && state.authenticated} >  <Profile/></div>}
-//  */}
-
-// <Route path='/home' component={Home}/>
-// <Route path='/schedule' component={Schedule}/>
-// <Route path='/classroom' component={Conference}/>
-// <Route path='/profile' component={Profile}/>
-// <Route path='/support' />
-//     </Switch>
-    
-    
-    
-    
-   
-     
-  
-//      )
-  
-//      return null;
-//      }
-  
-  
-  
-  
-
 
 
 
@@ -258,7 +207,7 @@ const useStyles = makeStyles((theme) => ({
                 <ImageAvatar/>
               </Typography>
             </Toolbar>
-            <Tabs value={history.location.pathname!=="/"?history.location.pathname:false} onChange={handleTab}>
+            <Tabs value={history.location.pathname!=="/"?history.location.pathname:"/"} onChange={handleTab}>
       {console.log(history.location.pathname)}
        <Tab to={routes[0]}  value={routes[0]} label='HOME'  component={Link}/>
        <Tab to={routes[1]} value={routes[1]} label='SCHEDULE'  component={Link} />

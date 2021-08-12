@@ -80,12 +80,15 @@ console.log(response);
   if(!register)
   {
    await axios.post('https://10.42.0.1:8000/login',{"email":email,"password":password}).then((response)=>{
+let data=response.data;
+data.user.authenticated=true;
 
-console.log(response);
+console.log(data);
 console.log(localStorage.length)
-localStorage.setItem('user',JSON.stringify(response.data));
-dispatch({type:"SET_USER","UserName":response.data.first_name,"last_name":response.data.last_name,"UserType":response.data.user_type,UserId:response.data._id,UserEmail:response.data.email,authenticated:true,Passwd:response.data.password});
+localStorage.setItem('data',JSON.stringify(response.data));
 
+//dispatch({type:"SET_USER","UserName":response.data.user.first_name,"last_name":response.data.user.last_name,"UserType":response.data.user.user_type,UserId:response.data.user._id,UserEmail:response.data.user.email,authenticated:true,Passwd:response.data.user.password});
+dispatch({type:"SET_USER",user:data.user,position:data.position});
 
     })
 
