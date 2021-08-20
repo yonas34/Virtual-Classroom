@@ -20,5 +20,8 @@
      const ask=require('./ask');
      const answering_questions=require('./answering_questions');
      const adding_course=require('./adding_course');
-  
-     module.exports={adding_course,creating_class,ask,creating_class,downloading_resources,answering_questions,group_discussion,group_management,leturing,login,notification,online_join,posting_info,preparing_exam,registering,schedule_view,scheduling,take_exam};
+     const getAllUsers=require('./getAllUsers');
+     const updateUsers=require('./updateUsers');
+     const deleteUser=require('./deleteUser');
+     const getAllClasses=require('./getAllClasses');
+     module.exports={getAllClasses,deleteUser,updateUsers,getAllUsers,adding_course,creating_class,ask,creating_class,downloading_resources,answering_questions,group_discussion,group_management,leturing,login,notification,online_join,posting_info,preparing_exam,registering,schedule_view,scheduling,take_exam};

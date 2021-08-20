@@ -93,7 +93,7 @@ if (!options.onOfferSDP) return;
 peer.createOffer(constraints).then(function(sessionDescription) {
 peer.setLocalDescription(sessionDescription).then(function() {
 options.onOfferSDP(sessionDescription);
-console.log('offer-sdp', sessionDescription.sdp);
+console.log('offer-sdp--', sessionDescription.sdp);
 });
 }).catch(onSdpError);
 }

@@ -4,7 +4,7 @@ const userSchema=require('../model/user');
 const studentSchema=require('../model/student')
 const lecturerSchema=require('../model/lecturer');
 const register=async (req,res)=>{
-  
+  console.log(req.body);
    try{
 const {first_name,last_name,email,password,user_type}=req.body;
 if(!(first_name && last_name && email && password && user_type)){
@@ -33,7 +33,12 @@ userInfo:user._id,
 let doc=await studentSchema.findById(student._id).populate("userInfo");
 res.status(201).send(doc);
 }
+if(user_type==="admin")
+{
+res.status(201).send(user);
 
+
+}
 if(user_type==="lecturer"){
  let lecturer= await lecturerSchema.create({
 //   listOfClasses:[],

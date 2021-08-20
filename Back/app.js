@@ -12,7 +12,7 @@ const bodyparser=require('body-parser')
 const cookieParser=require('cookie-parser');
 const session=require('express-session');
 const auth=require('./middleware/auth')
-const {creating_class,adding_course,answering_questions,ask,schedule_view,registering, downloading_resources, group_discussion,group_management,leturing,online_join,posting_info,preparing_exam,scheduling,take_exam,login}=require('./reqs/reqs')
+const {getAllClasses,deleteUser,updateUsers,getAllUsers,creating_class,adding_course,answering_questions,ask,schedule_view,registering, downloading_resources, group_discussion,group_management,leturing,online_join,posting_info,preparing_exam,scheduling,take_exam,login}=require('./reqs/reqs')
 const upload=require('./middleware/upload');
 const apps=(sessionHandler)=>{app.use(express.json());
 app.use(express.json());
@@ -55,6 +55,12 @@ app.get("/login",(req,res)=>login(req,res));
 app.post("/set_profile",upload.single('avatar'),(req,res)=>{
    res.status(200).send(req.body);
 });
+app.post("/get_all_users",(req,res)=>getAllUsers(req,res));
+app.post("/update_users",(req,res)=>updateUsers(req,res));
+
+app.post("/delete",(req,res)=>deleteUser(req,res));
+app.post("/get_all_classes",(req,res)=>getAllClasses(req,res));
+
 return app;
 
 }

@@ -1,8 +1,7 @@
 const mongoose=require('mongoose');
 
 const userSchema=new mongoose.Schema({
-listOfClasses:[{type:mongoose.Schema.Types.ObjectId,ref:"class"}],
-listOfCourses:[{type:mongoose.Schema.Types.ObjectId,ref:"course"}],
+listOfClasses:[{class:{type:mongoose.Schema.Types.ObjectId,ref:"class"},course:{type:mongoose.Schema.Types.ObjectId,ref:"course"}}],
 userInfo:{type:mongoose.Schema.Types.ObjectId,ref:"user"},
 scheduleList:[{
     startDate:{type:Date},
